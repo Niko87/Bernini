@@ -25,6 +25,9 @@ class OrderRow(models.Model):
     class Meta:
         verbose_name = _('row')
         verbose_name_plural = _('rows')
+    @property
+    def subtotal(self):
+        return self.product.price*self.quantity 
     def __str__(self):
         return '{} - {}'.format(self.product, self.quantity)
 
@@ -41,7 +44,7 @@ class Order(models.Model):
     def total(self):
         total = 0
         for obj in self.order_rows.all():
-            total += obj.product.price*obj.quantity 
+            total += obj.subtotal 
         return total
     def __str__(self):
         return 'Order {:%d/%m/%Y} - {} €'.format(self.date ,self.total)

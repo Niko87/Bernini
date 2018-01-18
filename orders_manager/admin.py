@@ -10,5 +10,10 @@ class OrderRowInline(admin.TabularInline):
 class OrdersAdmin(admin.ModelAdmin):
     inlines = [ OrderRowInline, ]
 
+class ProductsAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Order, OrdersAdmin)
+admin.site.register(Product, ProductsAdmin)
+
 # Register your models here.
