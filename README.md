@@ -6,10 +6,12 @@ Install requirements:
 
 ```pip install -r requirements.txt```
 
+```
 Admin user: nicolas
 User1 : usuario1
 User2 : usuario2
 passwords : asdfg123
+```
 
 Change email configuration in settings.py:
 
