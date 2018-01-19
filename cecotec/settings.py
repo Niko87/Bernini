@@ -124,6 +124,9 @@ DEFAULT_FROM_EMAIL = ''
 
 SHOP_EMAIL = 'nicolas_abraham@hotmail.com'
 
+OVERRIDE_SEND_MAIL_AND_SAVE = True
+FOLDER_FOR_XLSX = 'xlsx'
+
 REST_FRAMEWORK = {
 	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
 	'PAGE_SIZE': 25,

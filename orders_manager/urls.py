@@ -7,8 +7,7 @@ from views import *
 
 urlpatterns = [
     url(r'^docs/', include_docs_urls(title='Cecotec API', 
-                                    authentication_classes=[],
-                                    permission_classes=[])),
+                                    permission_classes=[])), # allow to non logged users to see docs
     url(r'^api/', include(apirouter.urls)),
     url(r'^', include(nonadmin.urls))
 ]

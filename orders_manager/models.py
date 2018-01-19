@@ -18,13 +18,13 @@ class Product(models.Model):
         return self.code +' - '+self.name
 
 @python_2_unicode_compatible
-class OrderRow(models.Model):
+class OrderItem(models.Model):
     product = models.ForeignKey(Product)
     quantity = models.IntegerField()
-    order = models.ForeignKey('Order', related_name='order_rows')
+    order = models.ForeignKey('Order', related_name='order_items')
     class Meta:
-        verbose_name = _('row')
-        verbose_name_plural = _('rows')
+        verbose_name = _('item')
+        verbose_name_plural = _('items')
     @property
     def subtotal(self):
         return self.product.price*self.quantity 
@@ -43,7 +43,7 @@ class Order(models.Model):
     @property
     def total(self):
         total = 0
-        for obj in self.order_rows.all():
+        for obj in self.order_items.all():
             total += obj.subtotal 
         return total
     def __str__(self):

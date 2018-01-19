@@ -34,6 +34,7 @@ apirouter.register(r'products', ProductApi)
 class NonAdmin(AdminSite):
     '''
         BUYER VIEW
+        Extends admin site for non admin users
     '''
     login_form = NonAdminAuthenticationForm
     def has_permission(self, request):
@@ -41,8 +42,8 @@ class NonAdmin(AdminSite):
 
 nonadmin = NonAdmin(name='user_orders')
 
-class OrderRowInline(admin.TabularInline):
-    model = OrderRow
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
     def has_add_permission(self, request):
         return True
     def has_delete_permission(self, request, obj=None):
@@ -51,7 +52,12 @@ class OrderRowInline(admin.TabularInline):
         return True
 
 class OrdersAdmin(admin.ModelAdmin):
-    inlines = [ OrderRowInline, ]
+    '''
+        Allow to create, change and delete orders
+    '''
+    
+    list_display = [ 'id', 'date', 'total' ]
+    inlines = [ OrderItemInline, ]
     fields= ['address']
 
     def has_module_permission(self, request):
@@ -87,7 +93,7 @@ class OrdersAdmin(admin.ModelAdmin):
         sheet.write(row, 2 , 'Price' )
         row +=1
         
-        for item in obj.order_rows.all():
+        for item in obj.order_items.all():
             sheet.write(row, 0 , str(item.product) )
             sheet.write(row, 1 , item.quantity )
             sheet.write(row, 2 , item.subtotal )
@@ -95,23 +101,26 @@ class OrdersAdmin(admin.ModelAdmin):
         
         sheet.write(row, 1 , 'Total' ) 
         sheet.write(row, 2 , obj.total )
-        
-        ios = StringIO.StringIO()
-        workbook.save(ios)
-        file_excel = ios.getvalue()
-        ios.close()
         filename = 'order_{}.xls'.format(obj.id)
 
-        subject = 'New order'
-        body = 'New order'
-        email_message = EmailMultiAlternatives(subject, body, None, [settings.SHOP_EMAIL])
-        email_message.attach(*(filename, file_excel ,'application/vnd.ms-excel'))
-        email_message.send()
+        if settings.OVERRIDE_SEND_MAIL_AND_SAVE:
+            workbook.save('{}/{}'.format(settings.FOLDER_FOR_XLSX , filename) )
+        else:
+            ios = StringIO.StringIO()
+            workbook.save(ios)
+            file_excel = ios.getvalue()
+            ios.close()
+
+
+            subject = 'New order'
+            body = 'New order'
+            email_message = EmailMultiAlternatives(subject, body, None, [settings.SHOP_EMAIL])
+            email_message.attach(*(filename, file_excel ,'application/vnd.ms-excel'))
+            email_message.send()
 
     def save_related(self, request, form, formsets, change):
 
         super( OrdersAdmin, self ).save_related(request, form, formsets, change)
-        print(form.instance.order_rows.all().count())
         self.send_XLSX(form.instance)
 
 							
